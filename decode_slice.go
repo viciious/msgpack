@@ -152,10 +152,18 @@ func (d *Decoder) DecodeSlice() ([]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return d.decodeSlice(c)
+	return d.decodeSlice(c, d.DecodeInterface)
 }
 
-func (d *Decoder) decodeSlice(c codes.Code) ([]interface{}, error) {
+func (d *Decoder) DecodeSliceLoose() ([]interface{}, error) {
+	c, err := d.readCode()
+	if err != nil {
+		return nil, err
+	}
+	return d.decodeSlice(c, d.DecodeInterfaceLoose)
+}
+
+func (d *Decoder) decodeSlice(c codes.Code, di func() (interface{}, error)) ([]interface{}, error) {
 	n, err := d.arrayLen(c)
 	if err != nil {
 		return nil, err
@@ -166,7 +174,7 @@ func (d *Decoder) decodeSlice(c codes.Code) ([]interface{}, error) {
 
 	s := make([]interface{}, 0, min(n, sliceElemsAllocLimit))
 	for i := 0; i < n; i++ {
-		v, err := d.DecodeInterface()
+		v, err := di()
 		if err != nil {
 			return nil, err
 		}

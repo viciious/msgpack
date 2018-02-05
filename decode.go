@@ -266,7 +266,7 @@ func (d *Decoder) DecodeInterface() (interface{}, error) {
 		return d.DecodeMap()
 	}
 	if codes.IsFixedArray(c) {
-		return d.decodeSlice(c)
+		return d.decodeSlice(c, d.DecodeInterface)
 	}
 	if codes.IsFixedString(c) {
 		return d.string(c)
@@ -302,7 +302,7 @@ func (d *Decoder) DecodeInterface() (interface{}, error) {
 	case codes.Str8, codes.Str16, codes.Str32:
 		return d.string(c)
 	case codes.Array16, codes.Array32:
-		return d.decodeSlice(c)
+		return d.decodeSlice(c, d.DecodeInterface)
 	case codes.Map16, codes.Map32:
 		d.s.UnreadByte()
 		return d.DecodeMap()
@@ -332,7 +332,7 @@ func (d *Decoder) DecodeInterfaceLoose() (interface{}, error) {
 		return d.DecodeMap()
 	}
 	if codes.IsFixedArray(c) {
-		return d.decodeSlice(c)
+		return d.decodeSlice(c, d.DecodeInterfaceLoose)
 	}
 	if codes.IsFixedString(c) {
 		return d.string(c)
@@ -354,7 +354,7 @@ func (d *Decoder) DecodeInterfaceLoose() (interface{}, error) {
 	case codes.Str8, codes.Str16, codes.Str32:
 		return d.string(c)
 	case codes.Array16, codes.Array32:
-		return d.decodeSlice(c)
+		return d.decodeSlice(c, d.DecodeInterfaceLoose)
 	case codes.Map16, codes.Map32:
 		d.s.UnreadByte()
 		return d.DecodeMap()
